@@ -868,6 +868,17 @@ AutoDrive.settings.autoRepair = {
     isVehicleSpecific = true
 }
 
+AutoDrive.settings.preventEngineShutdown = {
+    values = {false, true},
+    texts = {"gui_ad_no", "gui_ad_yes"},
+    default = 1,
+    current = 1,
+    text = "gui_ad_preventEngineShutdown",
+    tooltip = "gui_ad_preventEngineShutdown_tooltip",
+    translate = true,
+    isVehicleSpecific = true
+}
+
 AutoDrive.settings.showMarkersOnMap = {
     values = {0x00, 0x01, 0x02, 0x03},
     texts = {"gui_ad_no", "gui_ad_mainMenuMap", "gui_ad_ingameMap", "gui_ad_both"},

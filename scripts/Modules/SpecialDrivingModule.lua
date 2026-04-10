@@ -100,6 +100,9 @@ function ADSpecialDrivingModule:stopAndHoldVehicle(dt)
 end
 
 function ADSpecialDrivingModule:shouldStopMotor()
+    if AutoDrive.getSetting("preventEngineShutdown", self.vehicle) then
+        return false
+    end
     return self.motorShouldBeStopped and (not self:shouldNotStopMotor())
 end
 

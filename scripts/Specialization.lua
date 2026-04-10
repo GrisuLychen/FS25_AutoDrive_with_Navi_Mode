@@ -209,6 +209,7 @@ function AutoDrive:onLoad(savegame)
     self.ad.modes[AutoDrive.MODE_LOAD] = LoadMode:new(self)
     self.ad.modes[AutoDrive.MODE_BGA] = BGAMode:new(self)
     self.ad.modes[AutoDrive.MODE_UNLOAD] = CombineUnloaderMode:new(self)
+    self.ad.modes[AutoDrive.MODE_NAVIGATION] = NavigationMode:new(self)
 
     self.ad.onRouteToPark = false
     self.ad.onRouteToRefuel = false
@@ -471,6 +472,13 @@ function AutoDrive:onUpdate(dt)
 
     self.ad.stateModule:update(dt)
 
+    if self.ad.stateModule:isNavigationActive() then
+        local currentMode = self.ad.stateModule:getCurrentMode()
+        if currentMode ~= nil and currentMode.update ~= nil then
+            currentMode:update(dt)
+        end
+    end
+
     ADSensor:handleSensors(self, dt)
 
     if not self.ad.stateModule:isActive() and self.ad.taskModule:getNumberOfTasks() > 0 then
@@ -529,6 +537,38 @@ function AutoDrive:onDrawUIInfo()
 
     if AutoDrive.getSetting("showHUD") then
         AutoDrive.Hud:drawHud(self)
+    end
+    AutoDrive.Hud:drawNavigationOverlay(self)
+    if self.ad.stateModule:getMode() == AutoDrive.MODE_NAVIGATION and self.ad.stateModule:isNavigationActive() then
+        local navigationMode = self.ad.modes[AutoDrive.MODE_NAVIGATION]
+        if navigationMode ~= nil then
+            local preview = navigationMode:getPreviewData()
+            if preview ~= nil then
+                local previewRoute = preview.route
+                local projection = preview.projection
+                local startIndex = preview.startIndex
+                local endIndex = preview.endIndex
+
+                for index = startIndex, endIndex do
+                    local pointA = previewRoute[index]
+                    local pointB = previewRoute[index + 1]
+                    if pointA ~= nil and pointB ~= nil then
+                        local startX = pointA.x
+                        local startY = pointA.y
+                        local startZ = pointA.z
+
+                        if index == startIndex and projection ~= nil then
+                            startX = projection.x
+                            startY = projection.y
+                            startZ = projection.z
+                        end
+
+                        ADDrawingManager:addLineTask(startX, startY, startZ, pointB.x, pointB.y, pointB.z, 20.0, 1, 0, 0)
+                        ADDrawingManager:addArrowTask(startX, startY, startZ, pointB.x, pointB.y, pointB.z, 12.0, ADDrawingManager.arrows.position.start, 1, 0, 0)
+                    end
+                end
+            end
+        end
     end
     if AutoDrive.getSetting("showNextPath") == true then
         local sWP = self.ad.stateModule:getCurrentWayPoint()
@@ -1124,6 +1164,7 @@ function AutoDrive:startAutoDrive()
         end
 
         if not self.ad.stateModule:isActive() then
+            self.ad.stateModule:setNavigationActive(false)
             self.ad.stateModule:setActive(true)
 
             self.ad.isStoppingWithError = false
@@ -1254,7 +1295,7 @@ function AutoDrive:stopAutoDrive()
                         end
                     end
 
-                    if self.stopMotor ~= nil then
+                    if self.stopMotor ~= nil and not AutoDrive.getSetting("preventEngineShutdown", self) then
                         self:stopMotor()
                     end
                 end
@@ -1760,7 +1801,7 @@ function AutoDrive:updateAutoDriveLights(switchOff)
 end
 
 function AutoDrive:getCanMotorRun(superFunc)
-    if self.ad ~= nil and self.ad.stateModule:isActive() and self.ad.specialDrivingModule:shouldStopMotor() then
+    if self.ad ~= nil and self.ad.stateModule:isActive() and self.ad.specialDrivingModule:shouldStopMotor() and not AutoDrive.getSetting("preventEngineShutdown", self) then
         return false
     else
         return superFunc(self)

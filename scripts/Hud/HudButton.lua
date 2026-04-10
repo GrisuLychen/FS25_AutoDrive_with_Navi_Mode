@@ -71,6 +71,8 @@ function ADHudButton:getNewState(vehicle)
             newState = 4
         elseif vehicle.ad.stateModule:getMode() == AutoDrive.MODE_BGA then
             newState = 6
+        elseif vehicle.ad.stateModule:getMode() == AutoDrive.MODE_NAVIGATION then
+            newState = 7
         else
             newState = 1
         end
@@ -107,7 +109,7 @@ function ADHudButton:getNewState(vehicle)
     end
 
     if self.primaryAction == "input_start_stop" then
-        if vehicle.ad.stateModule:isActive() then
+        if vehicle.ad.stateModule:isActive() or vehicle.ad.stateModule:isNavigationActive() then
             newState = 2
         else
             newState = 1

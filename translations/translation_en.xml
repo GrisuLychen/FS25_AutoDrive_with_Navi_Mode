@@ -85,6 +85,7 @@
 		<text name="AD_MODE_PICKUPANDDELIVER"							text="Pickup and Deliver" />
 		<text name="AD_MODE_UNLOAD"									text="Unload Combine" />
 		<text name="AD_MODE_LOAD"										text="Load" />
+		<text name="AD_MODE_NAVIGATION"							text="Navigation" />
 		<text name="AD_MODE_BGA"										text="Unload bunker silo" />
 		<text name="AD_synchronizing"									text="loading network from server.." />
 		<text name="AD_lctrl_for_extendedEditor"						text="LCTRL for extended editor mode" />
@@ -206,6 +207,8 @@
 		<text name="gui_ad_autoRefuel_tooltip"							text="Drive to refuel destination (close to refuel trigger) when fuel level is low." />
 		<text name="gui_ad_autoRepair"									text="Automatic Repairing" />
 		<text name="gui_ad_autoRepair_tooltip"							text="Drive to workshop destination (close to repair trigger) when wear level is too high." />
+		<text name="gui_ad_preventEngineShutdown"					text="Keep engine running" />
+		<text name="gui_ad_preventEngineShutdown_tooltip"			text="Prevents AutoDrive from switching the engine off while stopping or waiting." />
 		<text name="gui_ad_filter"										text="Filter" />
 		<text name="gui_ad_enterDestinationFilterTitle"				text="Change destination filter text" />
 		<text name="gui_ad_enterDestinationFilterText"					text="Insert filter text:" />
@@ -288,7 +291,16 @@
 		<text name="gui_ad_RecordOppositeDriveDirectionOffset_tooltip"	text="Move recording from vehicle to the left (-0.1 .. -6m) or right (0.1 .. 6m). Driving reverse wil stop recording!" />
 		<text name="gui_ad_settingsPage_title"							text="Settings - AutoDrive" />
 		<text name="gui_ad_userSettingsPage_title"						text="User Settings - AutoDrive" />
-		<text name="gui_ad_vehicleSettingsPage_title"					text="Vehicle Settings - AutoDrive" />
+				<text name="AD_NAV_LEFT"								text="&lt; LEFT" />
+		<text name="AD_NAV_SHARP_LEFT"							text="&lt;&lt; SHARP LEFT" />
+		<text name="AD_NAV_SHARP_RIGHT"						text="&gt;&gt; SHARP RIGHT" />
+		<text name="AD_NAV_RIGHT"							text="&gt; RIGHT" />
+		<text name="AD_NAV_STRAIGHT"						text="^ STRAIGHT" />
+		<text name="AD_NAV_ARRIVED"							text="DESTINATION" />
+		<text name="AD_NAV_NO_ROUTE"							text="No route" />
+		<text name="AD_NAV_UTURN"							text="PLEASE TURN AROUND" />
+		<text name="AD_NAV_THEN"							text="Then:" />
+<text name="gui_ad_vehicleSettingsPage_title"					text="Vehicle Settings - AutoDrive" />
 		<text name="gui_ad_combineUnloadSettingsPage_title"			text="Combine Unload Settings - AutoDrive" />
 		<text name="gui_ad_debugSettingsPage_title"					text="Debug Settings - AutoDrive" />
 		<text name="gui_ad_eFeaturesSettingsPage_title"				text="Experimental Features Settings - AutoDrive" />

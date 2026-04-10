@@ -264,7 +264,18 @@ function ADInputManager:input_start_stop(vehicle, farmId)
     if ADGraphManager:getWayPointById(1) == nil or vehicle.ad.stateModule:getFirstMarker() == nil then
         return
     end
-    if vehicle.ad.stateModule:isActive() then
+
+    if vehicle.ad.stateModule:getMode() == AutoDrive.MODE_NAVIGATION then
+        if vehicle.ad.stateModule:isNavigationActive() then
+            vehicle.ad.stateModule:getCurrentMode():stop()
+        else
+            if farmId and farmId > 0 then
+                vehicle.ad.stateModule:setActualFarmId(farmId)
+            end
+            vehicle.ad.stateModule:setLoopsDone(0)
+            vehicle.ad.stateModule:getCurrentMode():start(AutoDrive.USER_PLAYER)
+        end
+    elseif vehicle.ad.stateModule:isActive() then
         vehicle.ad.isStoppingWithError = true
         vehicle.ad.stateModule:setLoopsDone(0)
         vehicle:stopAutoDrive()

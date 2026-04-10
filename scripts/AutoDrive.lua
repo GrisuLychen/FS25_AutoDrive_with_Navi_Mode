@@ -26,6 +26,7 @@ AutoDrive.MODE_DELIVERTO = 3
 AutoDrive.MODE_LOAD = 4
 AutoDrive.MODE_UNLOAD = 5
 AutoDrive.MODE_BGA = 6
+AutoDrive.MODE_NAVIGATION = 7
 
 AutoDrive.DC_NONE = 0
 AutoDrive.DC_VEHICLEINFO = 1

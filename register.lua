@@ -123,6 +123,8 @@ source(Utils.getFilename("scripts/Modes/PickupAndDeliverMode.lua", g_currentModD
 source(Utils.getFilename("scripts/Modes/LoadMode.lua", g_currentModDirectory))
 source(Utils.getFilename("scripts/Modes/BGAMode.lua", g_currentModDirectory))
 source(Utils.getFilename("scripts/Modes/CombineUnloaderMode.lua", g_currentModDirectory))
+source(Utils.getFilename("scripts/Modes/NavigationConfig.lua", g_currentModDirectory))
+source(Utils.getFilename("scripts/Modes/NavigationMode.lua", g_currentModDirectory))
 
 source(Utils.getFilename("scripts/Sensors/VirtualSensors.lua", g_currentModDirectory))
 source(Utils.getFilename("scripts/Sensors/CollSensor.lua", g_currentModDirectory))

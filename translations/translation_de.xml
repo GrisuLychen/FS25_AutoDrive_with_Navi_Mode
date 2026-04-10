@@ -85,6 +85,7 @@
 		<text name="AD_MODE_PICKUPANDDELIVER"							text="Abholen und Abliefern" />
 		<text name="AD_MODE_UNLOAD"									text="Drescher abfahren" />
 		<text name="AD_MODE_LOAD"										text="Abholen" />
+		<text name="AD_MODE_NAVIGATION"							text="Navi" />
 		<text name="AD_MODE_BGA"										text="Fahrsilo entladen" />
 		<text name="AD_synchronizing"									text="Kurse vom Server laden..." />
 		<text name="AD_lctrl_for_extendedEditor"						text="LSTRG zum erweiterten Modus" />
@@ -206,6 +207,8 @@
 		<text name="gui_ad_autoRefuel_tooltip"							text="Bei einem niedrigen Tanklevel wird automatisch ein Ziel in Tankstellennähe angefahren." />
 		<text name="gui_ad_autoRepair"									text="Automatische Reparatur" />
 		<text name="gui_ad_autoRepair_tooltip"							text="Falls das Fahrzeug oder ein Anbaugerät stark beschädigt ist, automatisch Werkstatt anfahren und reparieren." />
+		<text name="gui_ad_preventEngineShutdown"					text="Motor nicht abschalten" />
+		<text name="gui_ad_preventEngineShutdown_tooltip"			text="Verhindert, dass AutoDrive den Motor beim Stoppen oder Warten abstellt." />
 		<text name="gui_ad_filter"										text="Filter" />
 		<text name="gui_ad_enterDestinationFilterTitle"				text="Zielfilter ändern" />
 		<text name="gui_ad_enterDestinationFilterText"					text="Zielfilter eingeben:" />
@@ -288,7 +291,16 @@
 		<text name="gui_ad_RecordOppositeDriveDirectionOffset_tooltip"	text="verschiebt die Aufzeichnung vom Fahrzeug nach links (-0.1 .. -6m) oder rechts (0.1 .. 6m). Rückwärts fahren deaktiviert die Aufnahme!" />
 		<text name="gui_ad_settingsPage_title"							text="Einstellungen - AutoDrive" />
 		<text name="gui_ad_userSettingsPage_title"						text="Benutzereinstellungen - AutoDrive" />
-		<text name="gui_ad_vehicleSettingsPage_title"					text="Fahrzeugeinstellungen - AutoDrive" />
+				<text name="AD_NAV_LEFT"								text="&lt; LINKS" />
+		<text name="AD_NAV_SHARP_LEFT"							text="&lt;&lt; SCHARF LINKS" />
+		<text name="AD_NAV_SHARP_RIGHT"						text="&gt;&gt; SCHARF RECHTS" />
+		<text name="AD_NAV_RIGHT"							text="&gt; RECHTS" />
+		<text name="AD_NAV_STRAIGHT"						text="^ GERADEAUS" />
+		<text name="AD_NAV_ARRIVED"							text="ZIEL" />
+		<text name="AD_NAV_NO_ROUTE"							text="Keine Route" />
+		<text name="AD_NAV_UTURN"							text="BITTE WENDEN" />
+		<text name="AD_NAV_THEN"							text="Dann:" />
+<text name="gui_ad_vehicleSettingsPage_title"					text="Fahrzeugeinstellungen - AutoDrive" />
 		<text name="gui_ad_combineUnloadSettingsPage_title"			text="Abfahrereinstellungen - AutoDrive" />
 		<text name="gui_ad_debugSettingsPage_title"					text="Debug-Einstellungen - AutoDrive" />
 		<text name="gui_ad_eFeaturesSettingsPage_title"				text="Experimentelle Features - AutoDrive" />

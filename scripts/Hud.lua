@@ -378,6 +378,99 @@ function AutoDriveHud:drawHud(vehicle)
 	end
 end
 
+function AutoDriveHud:drawNavigationOverlay(vehicle)
+	if vehicle == nil or vehicle.ad == nil or vehicle.ad.stateModule == nil then
+		return
+	end
+	if vehicle.ad.stateModule:getMode() ~= AutoDrive.MODE_NAVIGATION or not vehicle.ad.stateModule:isNavigationActive() then
+		return
+	end
+
+	local uiScale = g_gameSettings:getValue("uiScale")
+	if AutoDrive.getSetting("guiScale") ~= 0 then
+		uiScale = AutoDrive.getSetting("guiScale")
+	end
+
+	local navigationMode = vehicle.ad.modes[AutoDrive.MODE_NAVIGATION]
+	if navigationMode == nil then
+		return
+	end
+
+	local info = navigationMode:getDisplayInfo()
+	if info == nil then
+		return
+	end
+
+	if AutoDrive.navigationHudOverlayId == nil then
+		AutoDrive.navigationHudOverlayId = createImageOverlay('data/shared/default_normal.dds')
+	end
+
+	local titleScale = AutoDrive.FONT_SCALE * uiScale * 1.16
+	local textScale = AutoDrive.FONT_SCALE * uiScale * 1.48
+	local subTextScale = AutoDrive.FONT_SCALE * uiScale * 1.18
+	local nextTextScale = AutoDrive.FONT_SCALE * uiScale * 0.98
+	local x = 0.50
+	local yTitle = 0.949
+	local yText = 0.923
+	local ySub = 0.899
+	local yNext = 0.877
+	local lines = {
+		{ text = info.targetText or "", scale = titleScale },
+		{ text = info.directionText or "", scale = textScale },
+		{ text = info.distanceText or "", scale = subTextScale }
+	}
+	if info.nextText ~= nil and info.nextText ~= "" then
+		table.insert(lines, { text = info.nextText, scale = nextTextScale })
+	end
+
+	local function getLineWidth(scale, text)
+		if text == nil or text == "" then
+			return 0
+		end
+		if getTextWidth ~= nil then
+			return getTextWidth(scale, text)
+		end
+		return string.len(text) * scale * 0.55
+	end
+
+	local maxWidth = 0
+	for _, line in ipairs(lines) do
+		maxWidth = math.max(maxWidth, getLineWidth(line.scale, line.text))
+	end
+
+	local panelPaddingX = 0.012
+	local panelPaddingY = 0.005
+	local panelWidth = math.max(0.19, maxWidth + panelPaddingX * 2)
+	local panelBottom = (info.nextText ~= nil and info.nextText ~= "") and (yNext - panelPaddingY) or (ySub - panelPaddingY)
+	local panelTop = yTitle + titleScale * 0.95 + panelPaddingY
+	local panelHeight = math.max(0.054, panelTop - panelBottom)
+	local panelX = x - panelWidth * 0.5
+
+	new2DLayer()
+	setOverlayColor(AutoDrive.navigationHudOverlayId, 0, 0, 0, 0.68)
+	renderOverlay(AutoDrive.navigationHudOverlayId, panelX, panelBottom, panelWidth, panelHeight)
+
+	local function drawCenteredText(text, y, scale)
+		if text == nil or text == "" then
+			return
+		end
+		setTextAlignment(RenderText.ALIGN_CENTER)
+		setTextColor(0, 0, 0, 0.9)
+		renderText(x + 0.0011, y - 0.0011, scale, text)
+		setTextColor(1, 0.1, 0.1, 1)
+		renderText(x, y, scale, text)
+	end
+
+	drawCenteredText(info.targetText or "", yTitle, titleScale)
+	drawCenteredText(info.directionText or "", yText, textScale)
+	drawCenteredText(info.distanceText or "", ySub, subTextScale)
+	if info.nextText ~= nil and info.nextText ~= "" then
+		drawCenteredText(info.nextText, yNext, nextTextScale)
+	end
+	setTextAlignment(RenderText.ALIGN_LEFT)
+	setTextColor(1, 1, 1, 1)
+end
+
 function AutoDriveHud:update(dt)
     if self.hudElements ~= nil then
         for _, element in ipairs(self.hudElements) do -- `ipairs` is important, as we want "index-value pairs", not "key-value pairs". https://stackoverflow.com/a/55109411
@@ -951,6 +1044,8 @@ function AutoDriveHud:getModeName(vehicle)
 		return g_i18n:getText("AD_MODE_LOAD")
 	elseif vehicle.ad.stateModule:getMode() == AutoDrive.MODE_BGA then
 		return g_i18n:getText("AD_MODE_BGA")
+	elseif vehicle.ad.stateModule:getMode() == AutoDrive.MODE_NAVIGATION then
+		return g_i18n:getText("AD_MODE_NAVIGATION")
 	end
 
 	return ""

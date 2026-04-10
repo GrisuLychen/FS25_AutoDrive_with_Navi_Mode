@@ -50,6 +50,7 @@
         <slice id="input_silomode_4" uvs="264px 660px 128px 128px"/>
         <slice id="input_silomode_5" uvs="396px 660px 128px 128px"/>
         <slice id="input_silomode_6" uvs="528px 660px 128px 128px"/>
+        <slice id="input_silomode_7" uvs="1944px 136px 64px 64px"/>
         <slice id="input_startHelper_1" uvs="660px 660px 128px 128px"/>
         <slice id="input_startHelper_10" uvs="792px 660px 128px 128px"/>
         <slice id="input_startHelper_2" uvs="924px 660px 128px 128px"/>

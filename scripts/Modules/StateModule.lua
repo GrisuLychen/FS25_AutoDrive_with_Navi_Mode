@@ -12,7 +12,7 @@ ADStateModule.CREATE_SUB_PRIO_DUAL_TWOWAY = 9
 
 ADStateModule.CALCULATE_REMAINING_DRIVETIME_INTERVAL = 1000
 
-ADStateModule.HIGHEST_MODE = 5
+ADStateModule.HIGHEST_MODE = 7
 
 ADStateModule.BUNKER_UNLOAD_TRIGGER = 1
 ADStateModule.BUNKER_UNLOAD_TRAILER = 2
@@ -34,6 +34,7 @@ end
 
 function ADStateModule:reset()
     self.active = false
+    self.navigationActive = false
     self.mode = AutoDrive.MODE_DRIVETO
     self.firstMarker = ADGraphManager:getMapMarkerById(1)
     self.secondMarker = ADGraphManager:getMapMarkerById(1)
@@ -96,13 +97,19 @@ function ADStateModule:readFromXMLFile(xmlFile, key)
         return
     end
 
+    self.navigationActive = false
+
     local mode = xmlFile:getValue(key .. "#mode")
     --local mode = getXMLInt(xmlFile, key .. "#mode")
     if mode ~= nil then
         --if mode == AutoDrive.MODE_BGA then
             --mode = AutoDrive.MODE_DRIVETO
         --end
-        self.mode = mode
+        if mode >= AutoDrive.MODE_DRIVETO and mode <= ADStateModule.HIGHEST_MODE then
+            self.mode = mode
+        else
+            self.mode = AutoDrive.MODE_DRIVETO
+        end
     end
 
     local firstMarker = xmlFile:getValue(key .. "#firstMarker")
@@ -223,6 +230,7 @@ end
 
 function ADStateModule:doWriteStream(streamId)
     streamWriteBool(streamId, self.active)
+    streamWriteBool(streamId, self.navigationActive)
     streamWriteUIntN(streamId, self.mode, 4)
     streamWriteUIntN(streamId, self:getFirstMarkerId() + 1, 20)
     streamWriteUIntN(streamId, self:getSecondMarkerId() + 1, 20)
@@ -255,6 +263,7 @@ end
 
 function ADStateModule:doReadStream(streamId)
     self.active = streamReadBool(streamId)
+    self.navigationActive = streamReadBool(streamId)
     self.mode = streamReadUIntN(streamId, 4)
     self.firstMarker = ADGraphManager:getMapMarkerById(streamReadUIntN(streamId, 20) - 1)
     self.secondMarker = ADGraphManager:getMapMarkerById(streamReadUIntN(streamId, 20) - 1)
@@ -608,41 +617,37 @@ function ADStateModule:getCurrentMode()
 end
 
 function ADStateModule:nextMode()
-    if self.mode < ADStateModule.HIGHEST_MODE then
-        self.mode = self.mode + 1
-        if self.vehicle.spec_locomotive and self.mode == AutoDrive.MODE_UNLOAD then
+    local newMode = self.mode
+    if newMode < ADStateModule.HIGHEST_MODE then
+        newMode = newMode + 1
+        if self.vehicle.spec_locomotive and newMode == AutoDrive.MODE_UNLOAD then
             -- skip harvester mode for train
-            self.mode = self.mode + 1
-            if self.mode >= ADStateModule.HIGHEST_MODE then
-                self.mode = AutoDrive.MODE_DRIVETO
+            newMode = newMode + 1
+            if newMode > ADStateModule.HIGHEST_MODE then
+                newMode = AutoDrive.MODE_DRIVETO
             end
         end
     else
-        self.mode = AutoDrive.MODE_DRIVETO
+        newMode = AutoDrive.MODE_DRIVETO
     end
-    self:setAutomaticPickupTarget(false) -- disable automatic target on mode change
-    self:setAutomaticUnloadTarget(false) -- disable automatic target on mode change
-    AutoDrive.Hud.lastUIScale = 0
-    self:raiseDirtyFlag()
+    self:setMode(newMode)
 end
 
 function ADStateModule:previousMode()
-    if self.mode > AutoDrive.MODE_DRIVETO then
-        self.mode = self.mode - 1
-        if self.vehicle.spec_locomotive and self.mode == AutoDrive.MODE_UNLOAD then
+    local newMode = self.mode
+    if newMode > AutoDrive.MODE_DRIVETO then
+        newMode = newMode - 1
+        if self.vehicle.spec_locomotive and newMode == AutoDrive.MODE_UNLOAD then
             -- skip harvester mode for train
-            self.mode = self.mode - 1
-            if self.mode <= ADStateModule.MODE_DRIVETO then
-                self.mode = AutoDrive.HIGHEST_MODE
+            newMode = newMode - 1
+            if newMode < AutoDrive.MODE_DRIVETO then
+                newMode = ADStateModule.HIGHEST_MODE
             end
         end
     else
-        self.mode = ADStateModule.HIGHEST_MODE
+        newMode = ADStateModule.HIGHEST_MODE
     end
-    self:setAutomaticPickupTarget(false) -- disable automatic target on mode change
-    self:setAutomaticUnloadTarget(false) -- disable automatic target on mode change
-    AutoDrive.Hud.lastUIScale = 0
-    self:raiseDirtyFlag()
+    self:setMode(newMode)
 end
 
 function ADStateModule:setMode(newMode)
@@ -650,6 +655,10 @@ function ADStateModule:setMode(newMode)
         -- skip harvester mode for train
         return
     elseif newMode >= AutoDrive.MODE_DRIVETO and newMode <= ADStateModule.HIGHEST_MODE and newMode ~= self.mode then
+        if self.navigationActive and self.mode == AutoDrive.MODE_NAVIGATION and self.vehicle.ad ~= nil and self.vehicle.ad.modes ~= nil and self.vehicle.ad.modes[self.mode] ~= nil then
+            self.vehicle.ad.modes[self.mode]:reset()
+            self:setNavigationActive(false)
+        end
         self.mode = newMode
         self:setAutomaticPickupTarget(false) -- disable automatic target on mode change
         self:setAutomaticUnloadTarget(false) -- disable automatic target on mode change
@@ -666,11 +675,29 @@ function ADStateModule:setActive(active)
     self.remainingDriveTime = 0
     if active ~= self.active then
         self.active = active
+        if active then
+            self.navigationActive = false
+        end
         self:raiseDirtyFlag()
     end
 
     if self.active then
         self.creationMode = ADStateModule.CREATE_OFF
+        self:raiseDirtyFlag()
+    end
+end
+
+function ADStateModule:isNavigationActive()
+    return self.navigationActive
+end
+
+function ADStateModule:setNavigationActive(active)
+    if active ~= self.navigationActive then
+        self.navigationActive = active
+        if active then
+            self.active = false
+            self.remainingDriveTime = 0
+        end
         self:raiseDirtyFlag()
     end
 end
